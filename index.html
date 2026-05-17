@@ -47,7 +47,7 @@ html,body{margin:0;padding:0;background:#050b1b;width:100%;overflow-x:hidden;}
   width:100%;
   max-width:100%;
   margin:0;
-  padding:16px;
+  padding:0 16px 16px 16px;
   background:linear-gradient(175deg,#050b18 0%,#0b1630 35%,#091224 65%,#101f3f 100%);
   border-radius:0;
   border:1px solid rgba(80,170,255,.28);
@@ -79,7 +79,12 @@ html,body{margin:0;padding:0;background:#050b1b;width:100%;overflow-x:hidden;}
 .ember{position:absolute;top:-20px;pointer-events:none;animation:ember-fall linear infinite;will-change:transform;border-radius:50%;display:block;}
 .spark{position:absolute;top:-20px;pointer-events:none;animation:spark-fall linear infinite;will-change:transform;display:block;line-height:1;}
  
-.at-content{position:relative;z-index:2;}
+.at-content{
+  position:relative;
+  z-index:2;
+  margin-top:0;
+  padding-top:0;
+}
  
 .at-title{
   text-align:center;
@@ -332,19 +337,19 @@ audio{
   <div class="at-divider"></div>
 
   <div style="
-    margin-top:10px;
-    text-align:center;
-    font-style:italic;
-    color:#c8983a;
-    font-size:11px;
-    padding:10px;
-    background:rgba(30,14,2,.45);
-    border-radius:14px;
-    border:1px solid rgba(180,110,20,.18);
-    line-height:1.5;
-  ">
-    “The only Powder I abuse is the washing machine powder”
-  </div>
+  margin-top:10px;
+  text-align:center;
+  font-style:italic;
+  color:#9fd8ff;
+  font-size:11px;
+  padding:10px;
+  background:rgba(15,25,45,.45);
+  border-radius:14px;
+  border:1px solid rgba(80,170,255,.18);
+  line-height:1.5;
+">
+  “The only Powder I abuse is the washing machine powder”
+</div>
 
   <div style="
     text-align:center;

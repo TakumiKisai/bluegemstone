@@ -60,14 +60,12 @@ html,body{margin:0;padding:0;background:#050b1b;width:100%;overflow-x:hidden;}
 }
  
 #at-stars-canvas{
-  position:absolute;
-  top:0;
-  left:0;
+  position:absolute !important;
+  inset:0;
   width:100%;
   height:100%;
   pointer-events:none;
-  z-index:0;
-  display:block;
+  z-index:-1;
 }
  
 .at-orb-1{width:90px;height:90px;background:rgba(80,170,255,.18);top:8%;left:-18%;animation:orb-float 7s ease-in-out infinite;}
@@ -280,7 +278,7 @@ audio{
 <body>
  
 <div class="at-wrap" id="at-wrap">
-  <canvas id="at-stars-canvas" width="800" height="2158"></canvas>
+  <canvas id="at-stars-canvas"></canvas>
   <div class="at-orb at-orb-1"></div>
   <div class="at-orb at-orb-2"></div>
   <div class="at-orb at-orb-3"></div>

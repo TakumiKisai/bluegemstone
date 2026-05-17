@@ -227,6 +227,7 @@ audio{width:100%;height:32px;}
   <div class="at-orb at-orb-3"></div>
   <div class="at-orb at-orb-4"></div>
   <div id="at-particles"></div>
+</div>
  
   <div class="at-content">
     <div class="at-title">◈ Blue Gemstone ◈</div>
@@ -453,7 +454,7 @@ function timeAgo(ts){
 
 async function loadNewest(){
   try{
-    var r=await fetch('https://api.chess.com/pub/club/anime-team-3/members');
+    var r=await fetch('https://api.chess.com/pub/club/blue-gemstone/members');
     var d=await r.json();
 
     var members=[...(d.weekly||[]),...(d.monthly||[]),...(d.all_time||[])];

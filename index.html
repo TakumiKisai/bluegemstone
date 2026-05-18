@@ -456,27 +456,33 @@ function loadPfp(username,ids){
 loadPfp('Ahmed-Ayeldeen610',['pfp-ahmed']);
 
 function timeAgo(ts){
-  if(!ts || isNaN(ts)) return 'Recently';
+  if(!ts) return 'Recently';
 
+  ts = Number(ts);
+
+  // milliseconds → seconds
   if(ts > 9999999999){
-    ts=Math.floor(ts/1000);
+    ts = Math.floor(ts / 1000);
   }
 
-  var diff=Math.floor((Date.now()/1000)-ts);
+  var now = Math.floor(Date.now()/1000);
 
-  if(diff<30)return'Just now';
+  // if still invalid, just show Recently
+  if(ts < 1577836800 || ts > now){
+    return 'Recently';
+  }
 
-  var m=Math.floor(diff/60);
-  if(m<60)return m+'m ago';
+  var diff = now - ts;
 
-  var h=Math.floor(m/60);
-  if(h<24)return h+'h ago';
+  var d = Math.floor(diff/86400);
+  if(d < 1) return 'Today';
+  if(d < 7) return d+'d ago';
 
-  var d=Math.floor(h/24);
-  if(d<30)return d+'d ago';
+  var w = Math.floor(d/7);
+  if(w < 5) return w+'w ago';
 
-  var mo=Math.floor(d/30);
-  if(mo<12)return mo+'mo ago';
+  var mo = Math.floor(d/30);
+  if(mo < 12) return mo+'mo ago';
 
   return Math.floor(mo/12)+'y ago';
 }

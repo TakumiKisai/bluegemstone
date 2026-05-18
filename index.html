@@ -447,17 +447,22 @@ function loadPfp(username,ids){
 
 loadPfp('Ahmed-Ayeldeen610',['pfp-ahmed']);
 
-function timeAgo(ts){
-  if(!ts) return 'Unknown';
+ function timeAgo(ts){
+  if(!ts || isNaN(ts)) return 'Recently';
 
-  // fix if timestamp is already milliseconds
   if(ts > 9999999999){
     ts = Math.floor(ts / 1000);
   }
 
-  var diff = Math.floor(Date.now()/1000 - ts);
+  var now = Math.floor(Date.now()/1000);
 
-  if(diff < 0) return 'Just now';
+  // reject impossible dates
+  if(ts < 1262304000 || ts > now){
+    return 'Recently';
+  }
+
+  var diff = now - ts;
+
   if(diff < 60) return 'Just now';
 
   var m = Math.floor(diff/60);

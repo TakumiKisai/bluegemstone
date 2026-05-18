@@ -225,6 +225,62 @@ html,body{
   border:none;
   display:block;
 }
+
+.partner-list{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.partner-item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px;
+  border-radius:14px;
+  background:rgba(15,25,45,.55);
+  border:1px solid rgba(80,170,255,.20);
+  text-decoration:none;
+  transition:.25s;
+}
+
+.partner-item:hover{
+  transform:translateY(-2px);
+  border-color:rgba(140,220,255,.65);
+  box-shadow:0 0 18px rgba(120,210,255,.18);
+}
+
+.partner-avatar{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid rgba(120,200,255,.45);
+}
+
+.partner-info{
+  flex:1;
+}
+
+.partner-name{
+  color:#7ecbff;
+  font-weight:700;
+  font-size:11px;
+}
+
+.partner-desc{
+  color:#9fd8ff;
+  font-size:9px;
+}
+
+.partner-btn{
+  background:rgba(40,90,180,.45);
+  color:#d6f4ff;
+  padding:4px 10px;
+  border-radius:10px;
+  font-size:10px;
+  font-weight:700;
+} 
   
 </style>
 </head>
@@ -318,9 +374,35 @@ html,body{
       </div>
     </div>
 
+<div class="at-card">
+  <div class="at-section-title">✦ 🤝 PARTNERSHIPS ✦</div>
+
+  <div class="partner-list">
+
+    <a class="partner-item" href="https://www.chess.com/club/hybrid-chess-federation" target="_blank">
+      <img src="https://images.chesscomfiles.com/uploads/v1/group/599005.d826f0b0.160x160o.63ae8bffeca7.png" class="partner-avatar">
+      <div class="partner-info">
+        <div class="partner-name">Hybrid Chess Federation</div>
+        <div class="partner-desc">Owner : @Ahmed-Ayeldeen610</div>
+      </div>
+      <span class="partner-btn">View</span>
+    </a>
+
+    <a class="partner-item" href="https://www.chess.com/club/arcane" target="_blank">
+      <img src="https://images.chesscomfiles.com/uploads/v1/group/846951.2c042ab6.160x160o.cff55f5d1def.jpg" class="partner-avatar">
+      <div class="partner-info">
+        <div class="partner-name">Arcane</div>
+        <div class="partner-desc">Owner : @The-white-fang2</div>
+      </div>
+      <span class="partner-btn">View</span>
+    </a>
+
   </div>
 </div>
- 
+   
+  </div>
+ </div>
+   
   <script>
 (function(){
 

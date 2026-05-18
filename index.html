@@ -59,15 +59,6 @@ html,body{margin:0;padding:0;background:#050b1b;width:100%;overflow-x:hidden;}
     inset 0 0 80px rgba(0,0,0,.55);
 }
  
-#at-stars-canvas{
-  position:absolute !important;
-  inset:0;
-  width:100%;
-  height:100%;
-  pointer-events:none;
-  z-index:-1;
-}
- 
 .at-orb-1{width:90px;height:90px;background:rgba(80,170,255,.18);top:8%;left:-18%;animation:orb-float 7s ease-in-out infinite;}
 .at-orb-2{width:70px;height:70px;background:rgba(60,130,255,.14);top:28%;right:-14%;animation:orb-float 9s ease-in-out infinite 2s;}
 .at-orb-3{width:80px;height:80px;background:rgba(120,200,255,.12);top:58%;left:-12%;animation:orb-float 8s ease-in-out infinite 1s;}
@@ -278,7 +269,6 @@ audio{
 <body>
  
 <div class="at-wrap" id="at-wrap">
-  <canvas id="at-stars-canvas"></canvas>
   <div class="at-orb at-orb-1"></div>
   <div class="at-orb at-orb-2"></div>
   <div class="at-orb at-orb-3"></div>
@@ -375,40 +365,6 @@ audio{
   <script>
 (function(){
 
-var wrap=document.getElementById('at-wrap');
-var canvas=document.getElementById('at-stars-canvas');
-
-function resizeCanvas(){
-  canvas.width=wrap.offsetWidth;
-  canvas.height=wrap.scrollHeight;
-}
-
-resizeCanvas();
-
-var ctx=canvas.getContext('2d');
-var stars=[];
-
-function initStars(){
-  stars=[];
-  for(var i=0;i<70;i++){
-    var isBig=Math.random()<0.12;
-    var isMedium=!isBig&&Math.random()<0.2;
-
-    stars.push({
-      x:Math.random()*canvas.width,
-      y:Math.random()*canvas.height,
-      r:isBig?(Math.random()*1.0+1.2):isMedium?(Math.random()*0.5+0.6):(Math.random()*0.4+0.2),
-      base:Math.random()*0.20+0.06,
-      amp:Math.random()*0.55+0.18,
-      sp:Math.random()*0.8+0.25,
-      ph:Math.random()*Math.PI*2,
-      hue:28+Math.random()*27,
-      cross:isBig,
-      sparkle:isMedium&&Math.random()<0.4
-    });
-  }
-}
-
 initStars();
 
 function drawStars(ts){
@@ -471,9 +427,6 @@ for(var i=0;i<12;i++){
 
   container.appendChild(el);
 }
-
-var FALLBACK='https://www.chess.com/bundles/web/images/user-image.007dad08.svg';
-var DP='https://taki2023.github.io/taki/default-pawn.png';
 
 function loadPfp(username,ids){
   fetch('https://api.chess.com/pub/player/'+username.toLowerCase())

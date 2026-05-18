@@ -448,19 +448,31 @@ function loadPfp(username,ids){
 loadPfp('Ahmed-Ayeldeen610',['pfp-ahmed']);
 
 function timeAgo(ts){
-  var diff=Math.floor((Date.now()-ts*1000)/1000);
+  if(!ts) return 'Unknown';
 
-  if(diff<30)return'Just now';
-  var m=Math.floor(diff/60);
-  if(m<60)return m+'m ago';
+  // fix if timestamp is already milliseconds
+  if(ts > 9999999999){
+    ts = Math.floor(ts / 1000);
+  }
 
-  var h=Math.floor(m/60);
-  if(h<24)return h+'h ago';
+  var diff = Math.floor(Date.now()/1000 - ts);
 
-  var d=Math.floor(h/24);
-  if(d<7)return d+'d ago';
+  if(diff < 0) return 'Just now';
+  if(diff < 60) return 'Just now';
 
-  return Math.floor(d/7)+'w ago';
+  var m = Math.floor(diff/60);
+  if(m < 60) return m+'m ago';
+
+  var h = Math.floor(m/60);
+  if(h < 24) return h+'h ago';
+
+  var d = Math.floor(h/24);
+  if(d < 30) return d+'d ago';
+
+  var mo = Math.floor(d/30);
+  if(mo < 12) return mo+'mo ago';
+
+  return Math.floor(mo/12)+'y ago';
 }
 
 async function loadNewest(){

@@ -47,7 +47,7 @@ html,body{margin:0;padding:0;background:#050b1b;width:100%;overflow-x:hidden;}
   width:100%;
   max-width:100%;
   margin:0;
-  padding:0 16px 16px 16px;
+  padding:16px;
   background:linear-gradient(175deg,#050b18 0%,#0b1630 35%,#091224 65%,#101f3f 100%);
   border-radius:0;
   border:1px solid rgba(80,170,255,.28);
@@ -64,9 +64,16 @@ html,body{margin:0;padding:0;background:#050b1b;width:100%;overflow-x:hidden;}
 .at-orb-3{width:80px;height:80px;background:rgba(120,200,255,.12);top:58%;left:-12%;animation:orb-float 8s ease-in-out infinite 1s;}
 .at-orb-4{width:60px;height:60px;background:rgba(90,160,255,.10);top:78%;right:-10%;animation:orb-float 10s ease-in-out infinite 3s;}
  
-#at-particles{position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden;width:100%;height:100%;}
-.ember{position:absolute;top:-20px;pointer-events:none;animation:ember-fall linear infinite;will-change:transform;border-radius:50%;display:block;}
-.spark{position:absolute;top:-20px;pointer-events:none;animation:spark-fall linear infinite;will-change:transform;display:block;line-height:1;}
+#at-particles{
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  pointer-events:none;
+  z-index:1;
+  overflow:hidden;
+}
  
 .at-content{
   position:relative;

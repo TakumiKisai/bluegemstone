@@ -367,51 +367,14 @@ audio{
   <script>
 (function(){
 
-initStars();
-
-function drawStars(ts){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  var t=ts/1000;
-
-  for(var s of stars){
-    var a=Math.max(0,Math.min(1,s.base+s.amp*Math.sin(s.sp*t+s.ph)));
-
-    ctx.beginPath();
-    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-    ctx.fillStyle='hsla('+s.hue+',90%,85%,'+a+')';
-    ctx.fill();
-
-    if(s.cross){
-      ctx.strokeStyle='hsla('+s.hue+',90%,85%,'+(a*0.5)+')';
-      ctx.lineWidth=0.4;
-      var arm=s.r*3.2;
-
-      ctx.beginPath();
-      ctx.moveTo(s.x-arm,s.y);
-      ctx.lineTo(s.x+arm,s.y);
-      ctx.moveTo(s.x,s.y-arm);
-      ctx.lineTo(s.x,s.y+arm);
-      ctx.stroke();
-    }
-  }
-
-  requestAnimationFrame(drawStars);
-}
-
-requestAnimationFrame(drawStars);
-
-new ResizeObserver(function(){
-  resizeCanvas();
-  initStars();
-}).observe(wrap);
-
 var container=document.getElementById('at-particles');
 
+var FALLBACK='https://www.chess.com/bundles/web/images/user-image.007dad08.svg';
+var DP='https://taki2023.github.io/taki/default-pawn.png';
+
 var emberColors=[
-  {bg:'rgba(255,160,40,.90)',sh:'0 0 5px rgba(255,120,0,.9)'},
-  {bg:'rgba(255,210,60,.80)',sh:'0 0 5px rgba(255,190,0,.8)'},
-  {bg:'rgba(255,100,20,.75)',sh:'0 0 4px rgba(200,60,0,.7)'},
-  {bg:'rgba(255,180,30,.70)',sh:'0 0 4px rgba(200,110,0,.6)'}
+  {bg:'rgba(120,190,255,.90)',sh:'0 0 5px rgba(90,170,255,.9)'},
+  {bg:'rgba(180,220,255,.80)',sh:'0 0 5px rgba(140,210,255,.8)'}
 ];
 
 for(var i=0;i<12;i++){
@@ -432,18 +395,12 @@ for(var i=0;i<12;i++){
 
 function loadPfp(username,ids){
   fetch('https://api.chess.com/pub/player/'+username.toLowerCase())
-    .then(function(r){return r.ok?r.json():null;})
+    .then(r=>r.ok?r.json():null)
     .then(function(d){
       var src=d&&d.avatar?d.avatar:FALLBACK;
       ids.forEach(function(id){
         var el=document.getElementById(id);
-        if(el)el.src=src;
-      });
-    })
-    .catch(function(){
-      ids.forEach(function(id){
-        var el=document.getElementById(id);
-        if(el)el.src=FALLBACK;
+        if(el) el.src=src;
       });
     });
 }
@@ -454,7 +411,6 @@ function timeAgo(ts){
   var diff=Math.floor((Date.now()-ts*1000)/1000);
 
   if(diff<30)return'Just now';
-
   var m=Math.floor(diff/60);
   if(m<60)return m+'m ago';
 
@@ -473,42 +429,26 @@ async function loadNewest(){
     var d=await r.json();
 
     var members=[...(d.weekly||[]),...(d.monthly||[]),...(d.all_time||[])];
-    var seen=new Map();
 
-    members.forEach(function(m){
-      if(!m||!m.username||!m.joined)return;
-      seen.set(m.username,m);
-    });
-
-    var top=Array.from(seen.values())
-      .sort(function(a,b){return b.joined-a.joined;})
+    var top=members
+      .filter(m=>m&&m.username&&m.joined)
+      .sort((a,b)=>b.joined-a.joined)
       .slice(0,3);
 
     var results=await Promise.all(top.map(async function(m){
-      var pj=null,stats=null;
+      var base='https://api.chess.com/pub/player/'+m.username;
 
-      try{
-        var base='https://api.chess.com/pub/player/'+m.username;
-
-        var res=await Promise.all([
-          fetch(base).then(function(r){ return r.ok ? r.json() : null; }),
-          fetch(base+'/stats').then(function(r){ return r.ok ? r.json() : null; })
-        ]);
-
-        pj=res[0];
-        stats=res[1];
-      }catch(e){}
-
-      var rating=
-        stats?.chess_rapid?.last?.rating ||
-        stats?.chess_blitz?.last?.rating ||
-        stats?.chess_bullet?.last?.rating ||
-        '—';
+      var pj=await fetch(base).then(r=>r.ok?r.json():null);
+      var stats=await fetch(base+'/stats').then(r=>r.ok?r.json():null);
 
       return{
         username:m.username,
         avatar:(pj&&pj.avatar)?pj.avatar:FALLBACK,
-        rating:rating,
+        rating:
+          stats?.chess_rapid?.last?.rating ||
+          stats?.chess_blitz?.last?.rating ||
+          stats?.chess_bullet?.last?.rating ||
+          '—',
         joined:m.joined
       };
     }));
@@ -526,7 +466,7 @@ async function loadNewest(){
 
   }catch(e){
     document.getElementById('nm-list').innerHTML=
-      '<div style="text-align:center;color:#9a6e28;">Unable to load members.</div>';
+      '<div style="text-align:center;color:#7ecbff;">Unable to load members.</div>';
   }
 }
 

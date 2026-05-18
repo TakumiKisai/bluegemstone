@@ -228,9 +228,9 @@ audio{
 
 .bg-music-grid{
   display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-  justify-items:center;
+  grid-template-columns:repeat(2,125px);
+  gap:10px;
+  justify-content:center;
   margin-top:8px;
 }
 
@@ -241,13 +241,18 @@ audio{
   overflow:hidden;
   border:1px solid rgba(90,180,255,.35);
   background:rgba(15,25,45,.55);
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  display:block;
   box-shadow:
     inset 0 0 12px rgba(90,180,255,.08),
     0 0 12px rgba(90,180,255,.12);
   transition:.25s;
+}
+
+.bg-track iframe{
+  width:125px;
+  height:125px;
+  display:block;
+  border:none;
 }
 
 .bg-track:hover{
@@ -256,13 +261,6 @@ audio{
   box-shadow:
     0 0 18px rgba(120,210,255,.28);
 }
-
-.bg-track iframe{
-  width:125px;
-  height:125px;
-  display:block;
-  border:none;
-} 
   
 </style>
 </head>

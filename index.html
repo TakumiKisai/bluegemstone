@@ -407,49 +407,48 @@ html,body{
 <script>
 (function(){
 
-var container = document.getElementById('at-particles');
+var container=document.getElementById('at-particles');
 
-var FALLBACK = 'https://www.chess.com/bundles/web/images/user-image.007dad08.svg';
-var DP = 'https://taki2023.github.io/taki/default-pawn.png';
-
-var emberColors = [
-  {bg:'rgba(120,190,255,.90)',sh:'0 0 5px rgba(90,170,255,.9)'},
-  {bg:'rgba(180,220,255,.80)',sh:'0 0 5px rgba(140,210,255,.8)'}
+var emberColors=[
+  {bg:'rgba(255,160,40,.90)',sh:'0 0 5px rgba(255,120,0,.9)'},
+  {bg:'rgba(255,210,60,.80)',sh:'0 0 5px rgba(255,190,0,.8)'},
+  {bg:'rgba(255,100,20,.75)',sh:'0 0 4px rgba(200,60,0,.7)'},
+  {bg:'rgba(255,180,30,.70)',sh:'0 0 4px rgba(200,110,0,.6)'}
 ];
 
 for(var i=0;i<12;i++){
-  var c = emberColors[Math.floor(Math.random()*emberColors.length)];
-  var el = document.createElement('span');
+  var c=emberColors[Math.floor(Math.random()*emberColors.length)];
+  var el=document.createElement('span');
 
-  el.className = 'ember';
-  el.style.left = (Math.random()*100)+'%';
-  el.style.width = (2+Math.random()*3)+'px';
-  el.style.height = (2+Math.random()*3)+'px';
-  el.style.background = c.bg;
-  el.style.boxShadow = c.sh;
-  el.style.animationDuration = (10+Math.random()*10)+'s';
-  el.style.animationDelay = (Math.random()*8)+'s';
+  el.className='ember';
+  el.style.left=(Math.random()*100)+'%';
+  el.style.width=(2+Math.random()*3)+'px';
+  el.style.height=(2+Math.random()*3)+'px';
+  el.style.background=c.bg;
+  el.style.boxShadow=c.sh;
+  el.style.animationDuration=(10+Math.random()*10)+'s';
+  el.style.animationDelay=(Math.random()*8)+'s';
 
   container.appendChild(el);
 }
 
-function loadPfp(username, ids){
-  fetch('https://api.chess.com/pub/player/' + username.toLowerCase())
-    .then(function(r){
-      return r.ok ? r.json() : null;
-    })
-    .then(function(d){
-      var src = d && d.avatar ? d.avatar : FALLBACK;
+var FALLBACK='https://www.chess.com/bundles/web/images/user-image.007dad08.svg';
+var DP='https://taki2023.github.io/taki/default-pawn.png';
 
+function loadPfp(username,ids){
+  fetch('https://api.chess.com/pub/player/'+username.toLowerCase())
+    .then(function(r){return r.ok?r.json():null;})
+    .then(function(d){
+      var src=d&&d.avatar?d.avatar:FALLBACK;
       ids.forEach(function(id){
-        var el = document.getElementById(id);
-        if(el) el.src = src;
+        var el=document.getElementById(id);
+        if(el)el.src=src;
       });
     })
     .catch(function(){
       ids.forEach(function(id){
-        var el = document.getElementById(id);
-        if(el) el.src = FALLBACK;
+        var el=document.getElementById(id);
+        if(el)el.src=FALLBACK;
       });
     });
 }
@@ -460,105 +459,88 @@ function timeAgo(ts){
   if(!ts || isNaN(ts)) return 'Recently';
 
   if(ts > 9999999999){
-    ts = Math.floor(ts / 1000);
+    ts=Math.floor(ts/1000);
   }
 
-  var now = Math.floor(Date.now()/1000);
+  var diff=Math.floor((Date.now()/1000)-ts);
 
-  if(ts < 1262304000 || ts > now){
-    return 'Recently';
-  }
+  if(diff<30)return'Just now';
 
-  var diff = now - ts;
+  var m=Math.floor(diff/60);
+  if(m<60)return m+'m ago';
 
-  if(diff < 60) return 'Just now';
+  var h=Math.floor(m/60);
+  if(h<24)return h+'h ago';
 
-  var m = Math.floor(diff/60);
-  if(m < 60) return m+'m ago';
+  var d=Math.floor(h/24);
+  if(d<30)return d+'d ago';
 
-  var h = Math.floor(m/60);
-  if(h < 24) return h+'h ago';
-
-  var d = Math.floor(h/24);
-  if(d < 30) return d+'d ago';
-
-  var mo = Math.floor(d/30);
-  if(mo < 12) return mo+'mo ago';
+  var mo=Math.floor(d/30);
+  if(mo<12)return mo+'mo ago';
 
   return Math.floor(mo/12)+'y ago';
 }
 
 async function loadNewest(){
   try{
-    var r = await fetch('https://api.chess.com/pub/club/blue-gemstone/members');
-    var d = await r.json();
+    var r=await fetch('https://api.chess.com/pub/club/blue-gemstone/members');
+    var d=await r.json();
 
-    var members = [
-      ...(d.weekly || []),
-      ...(d.monthly || []),
-      ...(d.all_time || [])
-    ];
+    var members=[...(d.weekly||[]),...(d.monthly||[]),...(d.all_time||[])];
+    var seen=new Map();
 
-    // remove duplicates
-    var unique = {};
     members.forEach(function(m){
-      if(m && m.username){
-        unique[m.username] = m;
-      }
+      if(!m||!m.username||!m.joined)return;
+      seen.set(m.username,m);
     });
 
-    members = Object.values(unique);
-
-    var now = Math.floor(Date.now()/1000);
-
-    var top = members
-      .filter(function(m){
-        return m &&
-          m.username &&
-          m.joined &&
-          m.joined > 1262304000 &&
-          m.joined < now;
-      })
-      .sort(function(a,b){
-        return b.joined - a.joined;
-      })
+    var top=Array.from(seen.values())
+      .sort(function(a,b){return b.joined-a.joined;})
       .slice(0,3);
 
-    var results = await Promise.all(top.map(async function(m){
-      var base = 'https://api.chess.com/pub/player/' + m.username;
+    var results=await Promise.all(top.map(async function(m){
+      var pj=null,stats=null;
 
-      var pj = await fetch(base)
-        .then(function(r){ return r.ok ? r.json() : null; });
+      try{
+        var base='https://api.chess.com/pub/player/'+m.username;
 
-      var stats = await fetch(base + '/stats')
-        .then(function(r){ return r.ok ? r.json() : null; });
+        var res=await Promise.all([
+          fetch(base).then(function(r){ return r.ok ? r.json() : null; }),
+          fetch(base+'/stats').then(function(r){ return r.ok ? r.json() : null; })
+        ]);
 
-      return {
-        username: m.username,
-        avatar: (pj && pj.avatar) ? pj.avatar : FALLBACK,
-        rating:
-          stats?.chess_rapid?.last?.rating ||
-          stats?.chess_blitz?.last?.rating ||
-          stats?.chess_bullet?.last?.rating ||
-          '—',
-        joined: m.joined
+        pj=res[0];
+        stats=res[1];
+      }catch(e){}
+
+      var rating=
+        stats?.chess_rapid?.last?.rating ||
+        stats?.chess_blitz?.last?.rating ||
+        stats?.chess_bullet?.last?.rating ||
+        '—';
+
+      return{
+        username:m.username,
+        avatar:(pj&&pj.avatar)?pj.avatar:FALLBACK,
+        rating:rating,
+        joined:m.joined
       };
     }));
 
-    document.getElementById('nm-list').innerHTML = results.map(function(m){
+    document.getElementById('nm-list').innerHTML=results.map(function(m){
       return '<a class="nm-item" href="https://www.chess.com/member/'+m.username+'" target="_blank">'
-      + '<img class="nm-avatar" src="'+m.avatar+'" onerror="this.src=\''+DP+'\'">'
-      + '<div class="nm-info">'
-      + '<div class="nm-name">@'+m.username+'</div>'
-      + '<div class="nm-meta">'
-      + '<span class="nm-rating">'+m.rating+'</span>'
-      + '<span class="nm-joined">'+timeAgo(m.joined)+'</span>'
-      + '</div></div></a>';
+      +'<img class="nm-avatar" src="'+m.avatar+'" onerror="this.src=\''+DP+'\'">'
+      +'<div class="nm-info">'
+      +'<div class="nm-name">@'+m.username+'</div>'
+      +'<div class="nm-meta">'
+      +'<span class="nm-rating">'+m.rating+'</span>'
+      +'<span class="nm-joined">'+timeAgo(m.joined)+'</span>'
+      +'</div></div></a>';
     }).join('');
 
   }catch(e){
-    document.getElementById('nm-list').innerHTML =
-      '<div style="text-align:center;color:#7ecbff;">Unable to load members.</div>';
+    document.getElementById('nm-list').innerHTML=
+      '<div style="text-align:center;color:#9a6e28;">Unable to load members.</div>';
   }
 }
 

@@ -404,50 +404,59 @@ html,body{
   </div>
  </div>
    
-  <script>
+<script>
 (function(){
 
-var container=document.getElementById('at-particles');
+var container = document.getElementById('at-particles');
 
-var FALLBACK='https://www.chess.com/bundles/web/images/user-image.007dad08.svg';
-var DP='https://taki2023.github.io/taki/default-pawn.png';
+var FALLBACK = 'https://www.chess.com/bundles/web/images/user-image.007dad08.svg';
+var DP = 'https://taki2023.github.io/taki/default-pawn.png';
 
-var emberColors=[
+var emberColors = [
   {bg:'rgba(120,190,255,.90)',sh:'0 0 5px rgba(90,170,255,.9)'},
   {bg:'rgba(180,220,255,.80)',sh:'0 0 5px rgba(140,210,255,.8)'}
 ];
 
 for(var i=0;i<12;i++){
-  var c=emberColors[Math.floor(Math.random()*emberColors.length)];
-  var el=document.createElement('span');
+  var c = emberColors[Math.floor(Math.random()*emberColors.length)];
+  var el = document.createElement('span');
 
-  el.className='ember';
-  el.style.left=(Math.random()*100)+'%';
-  el.style.width=(2+Math.random()*3)+'px';
-  el.style.height=(2+Math.random()*3)+'px';
-  el.style.background=c.bg;
-  el.style.boxShadow=c.sh;
-  el.style.animationDuration=(10+Math.random()*10)+'s';
-  el.style.animationDelay=(Math.random()*8)+'s';
+  el.className = 'ember';
+  el.style.left = (Math.random()*100)+'%';
+  el.style.width = (2+Math.random()*3)+'px';
+  el.style.height = (2+Math.random()*3)+'px';
+  el.style.background = c.bg;
+  el.style.boxShadow = c.sh;
+  el.style.animationDuration = (10+Math.random()*10)+'s';
+  el.style.animationDelay = (Math.random()*8)+'s';
 
   container.appendChild(el);
 }
 
-function loadPfp(username,ids){
-  fetch('https://api.chess.com/pub/player/'+username.toLowerCase())
-    .then(r=>r.ok?r.json():null)
+function loadPfp(username, ids){
+  fetch('https://api.chess.com/pub/player/' + username.toLowerCase())
+    .then(function(r){
+      return r.ok ? r.json() : null;
+    })
     .then(function(d){
-      var src=d&&d.avatar?d.avatar:FALLBACK;
+      var src = d && d.avatar ? d.avatar : FALLBACK;
+
       ids.forEach(function(id){
-        var el=document.getElementById(id);
-        if(el) el.src=src;
+        var el = document.getElementById(id);
+        if(el) el.src = src;
+      });
+    })
+    .catch(function(){
+      ids.forEach(function(id){
+        var el = document.getElementById(id);
+        if(el) el.src = FALLBACK;
       });
     });
 }
 
 loadPfp('Ahmed-Ayeldeen610',['pfp-ahmed']);
 
- function timeAgo(ts){
+function timeAgo(ts){
   if(!ts || isNaN(ts)) return 'Recently';
 
   if(ts > 9999999999){
@@ -456,7 +465,6 @@ loadPfp('Ahmed-Ayeldeen610',['pfp-ahmed']);
 
   var now = Math.floor(Date.now()/1000);
 
-  // reject impossible dates
   if(ts < 1262304000 || ts > now){
     return 'Recently';
   }
@@ -482,47 +490,74 @@ loadPfp('Ahmed-Ayeldeen610',['pfp-ahmed']);
 
 async function loadNewest(){
   try{
-    var r=await fetch('https://api.chess.com/pub/club/blue-gemstone/members');
-    var d=await r.json();
+    var r = await fetch('https://api.chess.com/pub/club/blue-gemstone/members');
+    var d = await r.json();
 
-    var members=[...(d.weekly||[]),...(d.monthly||[]),...(d.all_time||[])];
+    var members = [
+      ...(d.weekly || []),
+      ...(d.monthly || []),
+      ...(d.all_time || [])
+    ];
 
-    var top=members
-      .filter(m=>m&&m.username&&m.joined)
-      .sort((a,b)=>b.joined-a.joined)
+    // remove duplicates
+    var unique = {};
+    members.forEach(function(m){
+      if(m && m.username){
+        unique[m.username] = m;
+      }
+    });
+
+    members = Object.values(unique);
+
+    var now = Math.floor(Date.now()/1000);
+
+    var top = members
+      .filter(function(m){
+        return m &&
+          m.username &&
+          m.joined &&
+          m.joined > 1262304000 &&
+          m.joined < now;
+      })
+      .sort(function(a,b){
+        return b.joined - a.joined;
+      })
       .slice(0,3);
 
-    var results=await Promise.all(top.map(async function(m){
-      var base='https://api.chess.com/pub/player/'+m.username;
+    var results = await Promise.all(top.map(async function(m){
+      var base = 'https://api.chess.com/pub/player/' + m.username;
 
-      var pj=await fetch(base).then(r=>r.ok?r.json():null);
-      var stats=await fetch(base+'/stats').then(r=>r.ok?r.json():null);
+      var pj = await fetch(base)
+        .then(function(r){ return r.ok ? r.json() : null; });
 
-      return{
-        username:m.username,
-        avatar:(pj&&pj.avatar)?pj.avatar:FALLBACK,
+      var stats = await fetch(base + '/stats')
+        .then(function(r){ return r.ok ? r.json() : null; });
+
+      return {
+        username: m.username,
+        avatar: (pj && pj.avatar) ? pj.avatar : FALLBACK,
         rating:
           stats?.chess_rapid?.last?.rating ||
           stats?.chess_blitz?.last?.rating ||
           stats?.chess_bullet?.last?.rating ||
           '—',
-        joined:m.joined
+        joined: m.joined
       };
     }));
 
-    document.getElementById('nm-list').innerHTML=results.map(function(m){
+    document.getElementById('nm-list').innerHTML = results.map(function(m){
       return '<a class="nm-item" href="https://www.chess.com/member/'+m.username+'" target="_blank">'
-      +'<img class="nm-avatar" src="'+m.avatar+'" onerror="this.src=\''+DP+'\'">'
-      +'<div class="nm-info">'
-      +'<div class="nm-name">@'+m.username+'</div>'
-      +'<div class="nm-meta">'
-      +'<span class="nm-rating">'+m.rating+'</span>'
-      +'<span class="nm-joined">'+timeAgo(m.joined)+'</span>'
-      +'</div></div></a>';
+      + '<img class="nm-avatar" src="'+m.avatar+'" onerror="this.src=\''+DP+'\'">'
+      + '<div class="nm-info">'
+      + '<div class="nm-name">@'+m.username+'</div>'
+      + '<div class="nm-meta">'
+      + '<span class="nm-rating">'+m.rating+'</span>'
+      + '<span class="nm-joined">'+timeAgo(m.joined)+'</span>'
+      + '</div></div></a>';
     }).join('');
 
   }catch(e){
-    document.getElementById('nm-list').innerHTML=
+    document.getElementById('nm-list').innerHTML =
       '<div style="text-align:center;color:#7ecbff;">Unable to load members.</div>';
   }
 }
